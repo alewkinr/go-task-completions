@@ -1,11 +1,18 @@
-#compdef task
+#compdef task gtask=task run=task
 
-# Listing commands from Taskfile.yml
+# Listing commands from Taskfile.yml or global Taskfile.yml which must be set as GLOBAL_TASKFILE in your .zshrc
 function __list() {
     local -a scripts
+    local taskfile
 
     if [ -f Taskfile.yml ]; then
-        tasks=$(task -l | sed -En "s/^\* ([^[:space:]]+):[[:space:]]+(.+)$/\1 \2/p" | awk '{gsub(/:/,"\\:",$1)} 1' | awk "{ st = index(\$0,\" \"); print \$1 \":\" substr(\$0,st+1)}")
+        taskfile=Taskfile.yml
+    elif [ -z "$taskfile" ] && [ -f $GLOBAL_TASKFILE ]; then
+        taskfile=$GLOBAL_TASKFILE
+    fi
+
+    if [ ! -z "$taskfile" ]; rthen
+        tasks=$(task -t $taskfile -l | sed -En "s/^\* ([^[:space:]]+):[[:space:]]+(.+)$/\1 \2/p" | awk '{gsub(/:/,"\\:",$1)} 1' | awk "{ st = index(\$0,\" \"); print \$1 \":\" substr(\$0,st+1)}")
         scripts=("${(@f)$(echo $tasks)}")
         _describe 'script' scripts
     fi
