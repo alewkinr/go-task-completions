@@ -11,7 +11,7 @@ function __list() {
         taskfile=$GLOBAL_TASKFILE
     fi
 
-    if [ ! -z "$taskfile" ]; rthen
+    if [ ! -z "$taskfile" ]; then
         tasks=$(task -t $taskfile -l | sed -En "s/^\* ([^[:space:]]+):[[:space:]]+(.+)$/\1 \2/p" | awk '{gsub(/:/,"\\:",$1)} 1' | awk "{ st = index(\$0,\" \"); print \$1 \":\" substr(\$0,st+1)}")
         scripts=("${(@f)$(echo $tasks)}")
         _describe 'script' scripts
